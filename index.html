@@ -3,173 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>随机王国 v0.1.0</title>
+    <title>随机王国 v0.2.0</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body { background: #1a1a1a; color: #fff; font-family: Arial, sans-serif; padding: 10px; }
+        #gameContainer { max-width: 600px; margin: 0 auto; }
+        .panel { background: #2a2a2a; border: 1px solid #444; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
         
-        body {
-            background: #1a1a1a;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            padding: 10px;
-        }
+        #stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
+        .stat { font-size: 13px; }
+        .stat-value { font-size: 16px; font-weight: bold; color: #4af; }
         
-        #gameContainer {
-            max-width: 600px;
-            margin: 0 auto;
-        }
+        #equipment { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; font-size: 12px; margin-top: 10px; }
+        .equip-item { color: #888; }
+        .equip-value { color: #4af; font-weight: bold; }
         
-        .panel {
-            background: #2a2a2a;
-            border: 1px solid #444;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        
-        #stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            text-align: center;
-        }
-        
-        .stat {
-            font-size: 14px;
-        }
-        
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #4af;
-        }
-        
-        #map {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 5px;
-            margin: 10px 0;
-        }
-        
-        .tile {
-            aspect-ratio: 1;
-            background: #333;
-            border: 2px solid #555;
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .tile:hover {
-            border-color: #fff;
-            transform: scale(1.05);
-        }
-        
+        #map { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; margin: 10px 0; }
+        .tile { aspect-ratio: 1; background: #333; border: 2px solid #555; border-radius: 3px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; }
+        .tile:hover { border-color: #fff; }
         .tile.player { background: #4a4; }
         .tile.enemy { background: #a44; }
+        .tile.boss { background: #f0f; }
         .tile.city { background: #44a; }
         .tile.resource { background: #aa4; }
-        .tile.empty { background: #333; }
+        .tile.chest { background: #fa0; }
+        .tile.shop { background: #0af; }
+        .tile.fog { background: #111; color: #333; }
         
-        #log {
-            height: 150px;
-            overflow-y: auto;
-            font-size: 13px;
-            line-height: 1.6;
-        }
+        #log { height: 180px; overflow-y: auto; font-size: 12px; line-height: 1.6; }
+        .log-entry { padding: 2px 0; border-bottom: 1px solid #333; }
+        .log-combat { color: #f44; }
+        .log-loot { color: #ff0; }
+        .log-event { color: #f4f; }
+        .log-heal { color: #4f4; }
+        .log-death { color: #f00; font-weight: bold; }
         
-        .log-entry {
-            padding: 3px 0;
-            border-bottom: 1px solid #333;
-        }
+        #actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .btn { background: #444; color: #fff; border: none; padding: 12px; font-size: 14px; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #555; }
         
-        #actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        
-        .btn {
-            background: #444;
-            color: #fff;
-            border: none;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .btn:hover {
-            background: #555;
-        }
-        
-        #startScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        
-        h1 {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #4af;
-        }
-        
-        .big-btn {
-            background: #4a4;
-            color: #000;
-            border: none;
-            padding: 20px 40px;
-            font-size: 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px;
-        }
+        #startScreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; }
+        h1 { font-size: 28px; margin-bottom: 15px; color: #4af; }
+        .big-btn { background: #4a4; color: #000; border: none; padding: 15px 30px; font-size: 18px; border-radius: 5px; cursor: pointer; margin: 10px; }
     </style>
 </head>
 <body>
     <div id="startScreen">
-        <h1>🏰 随机王国</h1>
-        <p style="color: #888; margin-bottom: 20px;">SLG Roguelike v0.1.0</p>
+        <h1>🏰 随机王国 v0.2.0</h1>
+        <p style="color: #888; margin-bottom: 20px; text-align: center;">SLG Roguelike</p>
         <button class="big-btn" onclick="game.start()">开始游戏</button>
     </div>
     
     <div id="gameContainer">
         <div class="panel">
             <div id="stats">
-                <div class="stat">
-                    <div>❤️ 生命</div>
-                    <div class="stat-value" id="hp">100</div>
-                </div>
-                <div class="stat">
-                    <div>⚔️ 攻击</div>
-                    <div class="stat-value" id="attack">10</div>
-                </div>
-                <div class="stat">
-                    <div>💰 金币</div>
-                    <div class="stat-value" id="gold">0</div>
-                </div>
-                <div class="stat">
-                    <div>📅 回合</div>
-                    <div class="stat-value" id="turn">1</div>
-                </div>
+                <div class="stat"><div>❤️ 生命</div><div class="stat-value" id="hp">100/100</div></div>
+                <div class="stat"><div>⚔️ 攻击</div><div class="stat-value" id="attack">10</div></div>
+                <div class="stat"><div>💰 金币</div><div class="stat-value" id="gold">0</div></div>
+                <div class="stat"><div>📅 回合</div><div class="stat-value" id="turn">1</div></div>
+            </div>
+            <div id="equipment">
+                <div class="equip-item">🎯 等级：<span class="equip-value" id="level">1</span></div>
+                <div class="equip-item">⭐ 经验：<span class="equip-value" id="exp">0/50</span></div>
+                <div class="equip-item">🧪 血瓶：<span class="equip-value" id="potions">1</span></div>
+            </div>
+            <div id="equipment" style="margin-top: 5px;">
+                <div class="equip-item">⚔️ 武器：<span class="equip-value" id="weapon">无</span></div>
+                <div class="equip-item">🛡️ 护甲：<span class="equip-value" id="armor">无</span></div>
+                <div class="equip-item">🏰 城市：<span class="equip-value" id="cities">0/3</span></div>
             </div>
         </div>
         
@@ -181,15 +82,15 @@
             <div id="log"></div>
         </div>
         
-        <div class="panel" id="actions">
-            <button class="btn" onclick="game.move(0, -1)">⬆️ 上</button>
-            <button class="btn" onclick="game.move(0, 1)">⬇️ 下</button>
-            <button class="btn" onclick="game.move(-1, 0)">⬅️ 左</button>
-            <button class="btn" onclick="game.move(1, 0)">➡️ 右</button>
-        </div>
-        
         <div class="panel">
-            <button class="btn" style="width: 100%" onclick="game.endTurn()">结束回合</button>
+            <div id="actions">
+                <button class="btn" onclick="game.move(0, -1)">⬆️ 上</button>
+                <button class="btn" onclick="game.move(-1, 0)">⬅️ 左</button>
+                <button class="btn" onclick="game.move(1, 0)">➡️ 右</button>
+                <button class="btn" onclick="game.move(0, 1)">⬇️ 下</button>
+                <button class="btn" onclick="game.usePotion()">🧪 血瓶</button>
+                <button class="btn" onclick="game.endTurn()">⏳ 回合</button>
+            </div>
         </div>
     </div>
 
